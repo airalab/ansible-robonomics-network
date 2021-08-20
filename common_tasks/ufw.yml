@@ -1,0 +1,42 @@
+---
+### HETZNER REQUIRED UFW RULES ### 
+- ufw:
+    state: enabled
+    policy: allow 
+- ufw: 
+    rule: allow
+    name: OpenSSH
+- ufw:
+    rule: allow
+    port: '30333'
+- ufw:
+    rule: allow
+    port: '30334'
+- ufw:
+    rule: allow
+    port: '9615'
+- ufw:
+    rule: deny
+    direction: out
+    dest: '10.0.0.0/8'
+- ufw:
+    rule: deny
+    direction: out
+    dest: '172.16.0.0/12'
+- ufw:
+    rule: deny
+    direction: out
+    dest: '192.168.0.0/16'
+- ufw:
+    rule: deny
+    direction: out
+    dest: '100.64.0.0/10'
+- ufw:
+    rule: deny
+    direction: out
+    dest: '198.18.0.0/15'
+- ufw:
+    rule: deny
+    direction: out
+    dest: '169.254.0.0/16'
+

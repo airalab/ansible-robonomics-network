@@ -1,0 +1,13 @@
+---
+# Telemetry URL, by default telemetry_url: "wss://telemetry.polkadot.io/submit/ 0"
+TELEMETRY_URL: "wss://telemetry.polkadot.io/submit/ 0"
+
+# Available parachain names: robonomics, ipci, mercury 
+PARACHAIN_NAME: robonomics
+
+# Available parachain IDs: 2077 for robonomics, 3000 for ipci, 5000 for mercury 
+PARACHAIN_ID: 2077
+
+# Example of SS58 address for rewards: "5Cw1rC4MUgqXkouic3EFvde2chihZsqRAXfhA2mBF3LxQPK2"
+# This is required variable for PARACHAIN_ID 2077 and there is no default value!
+LIGHTHOUSE_ACCOUNT: 

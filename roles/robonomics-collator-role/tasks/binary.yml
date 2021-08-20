@@ -1,0 +1,20 @@
+---
+- name: UPLOAD ROBONOMICS BINARY TO THE SERVER
+  # Upload files/robonomics if it exists, else install binary from  https://get.robonomics.network/install
+  block:
+    - name: "Upload robonomics binary to server from role files"
+      copy: src=robonomics  dest=/usr/local/bin/robonomics mode='0755'
+  rescue:
+    - name: Install actual Robonomics archive
+      # get_url: url=https://github.com/airalab/robonomics/releases/download/v{{ robonomics_version }}/robonomics-{{ robonomics_version }}-x86_64-unknown-linux-gnu.tar.gz dest=/root/
+      # TODO: use uri or get_url
+      shell: curl -sSf https://get.robonomics.network/install | sh
+
+    # - name: Unpack Robonomics binary to /usr/bin/robonomics
+    #   ansible.builtin.unarchive: src=/root/robonomics-{{ robonomics_version }}-x86_64-unknown-linux-gnu.tar.gz dest=/usr/bin/ remote_src=yes
+  tags: [ change_binary ]
+
+
+- name: REMOVE ROBONOMICS BINARY
+  file: path=/usr/local/bin/robonomics state=absent
+  tags: [ never, remove ]

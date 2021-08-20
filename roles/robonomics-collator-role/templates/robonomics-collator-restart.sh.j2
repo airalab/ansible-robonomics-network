@@ -1,0 +1,22 @@
+#!/bin/bash
+
+RELAYCHAIN_BEST_FINALIZED_DELTA=$(curl --fail --silent http://127.0.0.1:9616/metrics | grep polkadot_block_height | grep -e best -e finalized  | awk '{A[NR-1] = $2;} END { print A[0] - A[1] }')
+RELAYCHAIN_TARGET_BEST_DELTA=$(curl --fail --silent http://127.0.0.1:9616/metrics | grep polkadot_block_height | grep -e sync_target -e best | awk '{A[NR-1] = $2;} END { print A[0] - A[1] }')
+PARACHAIN_BEST_FINALIZED_DELTA=$(curl --fail --silent http://127.0.0.1:9615/metrics | grep substrate_block_height | grep -e best -e finalized | awk '{A[NR-1] = $2;} END { print A[0] - A[1] }')
+PARACHAIN_TARGET_BEST_DELTA=$(curl --fail --silent http://127.0.0.1:9615/metrics | grep substrate_block_height | grep -e sync_target -e best | awk '{A[NR-1] = $2;} END { print A[0] - A[1] }')
+
+if [[ $RELAYCHAIN_BEST_FINALIZED_DELTA -gt 30 ]] || [[ $RELAYCHAIN_TARGET_BEST_DELTA -gt 30 ]] || [[ $PARACHAIN_BEST_FINALIZED_DELTA -gt 30 ]] || [[ $PARACHAIN_BEST_FINALIZED_DELTA -eq 0 ]] || [[ $PARACHAIN_TARGET_BEST_DELTA -gt 30 ]]
+then
+echo restart {{ SERVICE_NAME }} service
+echo RELAYCHAIN_BEST_FINALIZED_DELTA = $RELAYCHAIN_BEST_FINALIZED_DELTA
+echo RELAYCHAIN_TARGET_BEST_DELTA = $RELAYCHAIN_TARGET_BEST_DELTA
+echo PARACHAIN_BEST_FINALIZED_DELTA = $PARACHAIN_BEST_FINALIZED_DELTA
+echo PARACHAIN_TARGET_BEST_DELTA = $PARACHAIN_TARGET_BEST_DELTA
+systemctl restart {{ SERVICE_NAME }}.service
+
+else 
+echo RELAYCHAIN_BEST_FINALIZED_DELTA = $RELAYCHAIN_BEST_FINALIZED_DELTA
+echo RELAYCHAIN_TARGET_BEST_DELTA = $RELAYCHAIN_TARGET_BEST_DELTA
+echo PARACHAIN_BEST_FINALIZED_DELTA = $PARACHAIN_BEST_FINALIZED_DELTA
+echo PARACHAIN_TARGET_BEST_DELTA = $PARACHAIN_TARGET_BEST_DELTA
+fi

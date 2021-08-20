@@ -1,0 +1,8 @@
+---
+- name: daemon-reload
+  shell: systemctl daemon-reload
+
+- name: crond-restart
+  service:
+    name: cron
+    state: restarted

@@ -1,0 +1,15 @@
+---
+- hosts: parachain-mercury-collators
+  user: root
+
+  roles:
+    - robonomics-collator-role
+
+  # tasks:
+    # - include_tasks: common_tasks/ufw.yml
+    #   tags: [ ufw ]
+    # - include_tasks: common_tasks/time_sync.yml
+
+    
+    # - include_role: 
+        # name: robonomics-collator-role

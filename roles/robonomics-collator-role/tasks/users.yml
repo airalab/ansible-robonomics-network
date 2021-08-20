@@ -1,0 +1,18 @@
+---
+- name: "Create collator's user"
+  user:
+    name: "{{ SERVICE_NAME }}"
+    shell: /bin/bash
+    # system: no       
+    createhome: yes
+    home: "/home/{{ SERVICE_NAME }}"
+    state: present
+  tags: [ create_user ]
+
+
+- name: "Remove collator's user"
+  ansible.builtin.user:
+    name: "{{ SERVICE_NAME }}"
+    state: absent
+    remove: yes
+  tags: [ never, remove ]

@@ -1,0 +1,6 @@
+__pycache__
+.ipynb*
+data*
+roles/robonomics-collator-role/vars/main.yml
+
+*inventory*.ini

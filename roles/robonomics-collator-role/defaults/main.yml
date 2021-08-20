@@ -1,0 +1,5 @@
+---
+TELEMETRY_URL: "wss://telemetry.polkadot.io/submit/ 0"
+CHAIN_ID: rococo_local_testnet
+PARACHAIN_NAME: robonomics
+PARACHAIN_ID: 2077
