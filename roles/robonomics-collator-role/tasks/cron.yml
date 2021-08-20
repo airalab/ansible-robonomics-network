@@ -22,12 +22,12 @@
     minute: "*/5"
     job: "/home/{{ SERVICE_NAME }}/scripts/robonomics-collator-restart.sh > /dev/null 2>&1"
   notify: crond-restart
-  tags: [ set_cron_rules ]
+  tags: [ set_cron_rules, start_service ]
 
 
 - name: REMOVE CRON RULES
   block:
-    - name: disable cron
+    - name: "Remove robonomics-collator-restart cron rule"
       ansible.builtin.cron:
         name: "robonomics-collator-restart"
         # env: yes
@@ -37,4 +37,4 @@
   rescue:
     - name: "There's no crontab for root"
       debug: msg="It's ok, go ahead"
-  tags: [ never, remove , remove_cron_rules ]
+  tags: [ never, remove , remove_cron_rules, stop_service ]
