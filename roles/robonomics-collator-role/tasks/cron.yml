@@ -1,5 +1,5 @@
 ---
-- name: ADD CRON RULES
+- name: UPLOAD RESTART SCRIPT
   block:
     - name: "Create directory for scripts"
       file:
@@ -14,13 +14,14 @@
         mode: 0755
         owner: '{{ SERVICE_NAME }}'
         group: '{{ SERVICE_NAME }}'
+  tags: [ upload_restart_script ]
 
-    - name: "Add users scripts robonomics-collator-restart.sh to crontab"
-      ansible.builtin.cron:
-        name: "robonomics-collator-restart"
-        minute: "*/5"
-        job: "/home/{{ SERVICE_NAME }}/scripts/robonomics-collator-restart.sh > /dev/null 2>&1"
-      notify: crond-restart
+- name: "Add robonomics-collator-restart.sh to crontab"
+  ansible.builtin.cron:
+    name: "robonomics-collator-restart"
+    minute: "*/5"
+    job: "/home/{{ SERVICE_NAME }}/scripts/robonomics-collator-restart.sh > /dev/null 2>&1"
+  notify: crond-restart
   tags: [ set_cron_rules ]
 
 

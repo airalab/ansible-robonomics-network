@@ -5,6 +5,7 @@
 #   - time_sync               +
 #   - set_ufw_rules           +
 #   - remove_ufw_rules        +
+#   - upload_restart_script   +
 #   - set_cron_rules          +
 #   - remove_cron_rules       +
 #   - change_binary           +
