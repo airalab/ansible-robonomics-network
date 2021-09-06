@@ -1,5 +1,5 @@
 ---
-- hosts: parachain-main-collators
+- hosts: experimental
   user: root
 
   roles:
