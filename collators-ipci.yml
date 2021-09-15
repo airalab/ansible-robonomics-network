@@ -1,6 +1,0 @@
----
-- hosts: parachain-ipci-collators
-  user: root
-
-  roles:
-    - robonomics-collator-role

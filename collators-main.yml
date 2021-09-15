@@ -1,6 +1,0 @@
----
-- hosts: experimental
-  user: root
-
-  roles:
-    - robonomics-collator-role

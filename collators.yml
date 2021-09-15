@@ -1,0 +1,10 @@
+---
+- hosts: collators
+  user: root
+
+  roles:
+    - common-role
+    - robonomics-collator-role
+
+  # tasks:
+  #   - import_tasks: common_tasks/ubuntu_update_and_upgrade.yml

@@ -5,7 +5,7 @@
     shell: /bin/bash
     # system: no       
     createhome: yes
-    home: "/home/{{ SERVICE_NAME }}"
+    home: "{{ USER_PATH }}"
     state: present
   tags: [ create_user ]
 

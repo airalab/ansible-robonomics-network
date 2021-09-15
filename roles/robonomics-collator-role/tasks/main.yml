@@ -2,13 +2,12 @@
 #   - start_service           +
 #   - restart_service         +
 #   - stop_service            +
-#   - time_sync               +
 #   - set_ufw_rules           +
 #   - remove_ufw_rules        +
 #   - upload_restart_script   +
 #   - set_cron_rules          +
 #   - remove_cron_rules       +
-#   - change_binary           +
+#   - upload_binary           +
 #   - set_service             +
 #   - remove_relaychain_db    +
 #   - remove_parachain_db     +
@@ -17,10 +16,10 @@
 ---
 # Set required var "SERVICE_NAME"
 - block:
-    - set_fact:
-        SERVICE_NAME: "{{ 'robonomics' if PARACHAIN_NAME=='robonomics' else 'robonomics_'+PARACHAIN_NAME }}"
-    - debug:
-        msg: 'var SERVICE_NAME={{ SERVICE_NAME }}'
+    - set_fact: SERVICE_NAME="{{ 'robonomics' if PARACHAIN_NAME=='robonomics' else 'robonomics_'+PARACHAIN_NAME }}"
+    - debug: msg='var SERVICE_NAME={{ SERVICE_NAME }}'
+    - set_fact: USER_PATH='/var/lib/{{ SERVICE_NAME }}'
+    - debug: msg='var USER_PATH={{ USER_PATH }}'
   tags: [ always ]
 
 - name: STOP EXISTING ROBONOMICS SERVICE
@@ -30,13 +29,13 @@
       service: name="{{ SERVICE_NAME }}.service" state=stopped
   rescue: 
     - debug: msg="There's no existing service named '{{ SERVICE_NAME }}'"
-  tags: [ stop_service, restart_service, change_binary, set_service, remove_relaychain_db, remove_parachain_db, remove_dbs, remove ]
+  tags: [ stop_service, restart_service, upload_binary, set_service, remove_relaychain_db, remove_parachain_db, remove_dbs, remove ]
   
-- import_tasks: time_sync.yml
 - import_tasks: ufw.yml
 - import_tasks: users.yml
 - import_tasks: cron.yml
 - import_tasks: binary.yml
+- import_tasks: spec.yml
 - import_tasks: service.yml
 - import_tasks: dbs.yml
 

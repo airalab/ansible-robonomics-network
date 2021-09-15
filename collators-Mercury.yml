@@ -1,9 +1,0 @@
----
-- hosts: experimental
-  user: root
-
-  # roles:
-  #   - robonomics-collator-role
-
-  tasks:
-    - import_tasks: common_tasks/ubuntu_update_and_upgrade.yml

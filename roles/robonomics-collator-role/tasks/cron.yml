@@ -1,26 +1,28 @@
 ---
 - name: UPLOAD RESTART SCRIPT
   block:
-    - name: "Create directory for scripts"
+    - name: "Create directory for cron scripts"
       file:
-        path: /home/{{ SERVICE_NAME }}/scripts
+        path: '{{ USER_PATH }}/cron'
         state: directory
         mode: 0755
+        owner: '{{ SERVICE_NAME }}'
+        group: '{{ SERVICE_NAME }}'
 
     - name: "Template robonomics-collator-restart.sh to user cron"
       template:
         src: robonomics-collator-restart.sh.j2
-        dest: /home/{{ SERVICE_NAME }}/scripts/robonomics-collator-restart.sh
+        dest: '{{ USER_PATH }}/cron/robonomics-collator-restart.sh'
         mode: 0755
         owner: '{{ SERVICE_NAME }}'
         group: '{{ SERVICE_NAME }}'
   tags: [ upload_restart_script ]
 
 - name: "Add robonomics-collator-restart.sh to crontab"
-  ansible.builtin.cron:
+  cron:
     name: "robonomics-collator-restart"
     minute: "*/5"
-    job: "/home/{{ SERVICE_NAME }}/scripts/robonomics-collator-restart.sh > /dev/null 2>&1"
+    job: "{{ USER_PATH }}/cron/robonomics-collator-restart.sh > /dev/null 2>&1"
   notify: crond-restart
   tags: [ set_cron_rules, start_service ]
 
@@ -28,7 +30,7 @@
 - name: REMOVE CRON RULES
   block:
     - name: "Remove robonomics-collator-restart cron rule"
-      ansible.builtin.cron:
+      cron:
         name: "robonomics-collator-restart"
         # env: yes
         state: absent
