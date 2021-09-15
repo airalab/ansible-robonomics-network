@@ -1,0 +1,4 @@
+---
+- import_tasks: hostname.yml
+- import_tasks: apt.yml
+- import_tasks: time_sync.yml
