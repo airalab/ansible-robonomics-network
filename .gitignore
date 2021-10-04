@@ -6,3 +6,4 @@ roles/robonomics-collator-role/files/robonomics
 roles/robonomics-collator-role/files/spec*.json
 
 *inventory*.ini
+*inventory*.yml
