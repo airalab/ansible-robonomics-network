@@ -1,4 +1,9 @@
 ---
+- name: Install ufw
+  apt:
+    name: ufw
+    # state: present
+
 - name: ADD UFW RULES
   block:
     - ufw: state=enabled policy=allow 

@@ -1,5 +1,5 @@
 ---
-- name: "Create collator's user"
+- name: "Create robonomics user"
   user:
     name: "{{ SERVICE_NAME }}"
     shell: /bin/bash
@@ -10,7 +10,7 @@
   tags: [ create_user ]
 
 
-- name: "Remove collator's user"
+- name: "Remove robonomics user"
   ansible.builtin.user:
     name: "{{ SERVICE_NAME }}"
     state: absent

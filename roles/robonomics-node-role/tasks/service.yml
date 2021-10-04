@@ -1,19 +1,21 @@
 ---
-- name: Template robonomics-collator.service
+- name: Template robonomics.service
   template:
-    src: robonomics-collator.service.j2
+    src: robonomics-{{ NODE_TYPE }}.service.j2
     dest: /etc/systemd/system/{{ SERVICE_NAME }}.service
-  notify: daemon-reload
+  notify: 
+    - daemon-reload
+    - robonomics-restart
   tags: [ set_service ]
 
 
 - name: REMOVE SERVICE
   block:
-    - name: "Delete collator service file"
+    - name: "Delete service file"
       file:
         path: /etc/systemd/system/{{ SERVICE_NAME }}.service
         state: absent
   rescue: 
     - name: "Can't delete service file"
-      debug: msg="There's no existing collator's service file, run the next task"
+      debug: msg="There's no existing service file, run the next task"
   tags: [ never, remove ]

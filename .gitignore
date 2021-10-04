@@ -1,9 +1,9 @@
 __pycache__
 .ipynb*
 data*
-roles/robonomics-collator-role/vars/main.yml
-roles/robonomics-collator-role/files/robonomics
-roles/robonomics-collator-role/files/spec*.json
+roles/robonomics-node-role/vars/main.yml
+roles/robonomics-node-role/files/robonomics
+roles/robonomics-node-role/files/spec*.json
 
 *inventory*.ini
 *inventory*.yml

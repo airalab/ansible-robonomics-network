@@ -2,6 +2,11 @@
 - name: daemon-reload
   shell: systemctl daemon-reload
 
+- name: robonomics-restart
+  service:
+    name: '{{ SERVICE_NAME }}'
+    state: restarted
+
 - name: crond-restart
   service:
     name: cron
