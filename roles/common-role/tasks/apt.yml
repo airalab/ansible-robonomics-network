@@ -5,11 +5,11 @@
 - name: Upgrade all apt packages
   apt:  upgrade=dist force_apt_get=yes
 
-- name: Check if a reboot is needed for Debian and Ubuntu boxes
+- name: Check if a reboot is needed for Debian and Ubuntu
   register: reboot_required_file
   stat:     path=/var/run/reboot-required get_md5=no
 
-- name: Reboot the Debian or Ubuntu server
+- name: Reboot
   reboot:
     msg: "Reboot initiated by Ansible due to kernel updates"
     connect_timeout: 5

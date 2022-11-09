@@ -2,4 +2,3 @@
 - name: Set timezone to UTC
   shell: timedatectl set-timezone UTC
   notify: crond-restart
-  tags: [ time_sync ]

@@ -1,4 +1,18 @@
 ---
 - import_tasks: hostname.yml
+  tags: [ set_hostname ]
+
 - import_tasks: apt.yml
+  tags: [ apt_upgrade ]
+  
 - import_tasks: time_sync.yml
+  tags: [ time_sync ]
+
+- import_tasks: ufw.yml
+  tags: [ set_ufw_rules ]
+
+- debug: 
+    msg:
+      - IPv4 = {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
+      - IPv6 = {{ hostvars[inventory_hostname]['ansible_default_ipv6']['address'] }}
+  tags: [ always ]
