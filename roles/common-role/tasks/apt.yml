@@ -24,3 +24,11 @@
     pkg:
       - python3-pip
       - curl
+
+- name: Install certbot, python3-certbot-nginx, nginx only for public_nodes
+  apt: 
+    pkg:
+      - certbot
+      - python3-certbot-nginx
+      - nginx
+  when: inventory_hostname in groups["public_nodes"]
