@@ -1,0 +1,10 @@
+{% for group in groups[item] -%}
+{% if hostvars[group]['wireguard_address'] is defined -%}
+{% set ip = hostvars[group]['wireguard_address'].split('/')[0] -%}
+{% else -%}
+{% set ip = hostvars[group]['ansible_host']  -%}     
+{% endif -%}
+- targets: ["{{ ip -}}:9615", "{{ ip -}}:9616", "{{ ip -}}:9100"]
+  labels:
+    instance: "{{ hostvars[group]['inventory_hostname'] -}}"
+{% endfor %}

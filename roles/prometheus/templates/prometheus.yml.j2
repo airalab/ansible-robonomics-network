@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "prometheus"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  {% for group in groups -%}
+  {% if "_prometheus" in group -%}
+  {% set splitted_group_name = group.split('_') -%}
+  
+  - job_name: "{{ splitted_group_name[0] -}}"
+    scrape_interval: 5s
+    file_sd_configs:
+      - files:
+        - {{ group -}}.yml
+        
+  {% endif -%}
+  {% endfor -%}

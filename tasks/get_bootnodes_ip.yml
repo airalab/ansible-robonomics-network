@@ -1,0 +1,11 @@
+---
+- hosts: bootnodes
+  user: root
+
+  tasks:
+    - name: Grep bootnode external address from journalctl
+      # Flag '-r' in journalctl is for reverse, flag -m1 in grep is just for first line searched output
+      shell: "ip a | grep 'scope global'"
+      register: BOOTNODE_IP
+
+    - debug: msg="{{ BOOTNODE_IP.stdout }}"

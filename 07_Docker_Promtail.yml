@@ -1,0 +1,42 @@
+- hosts: all
+
+  tasks:
+  - name: Create a promtail container
+    docker_container:
+      name: promtail
+      image: grafana/promtail:2.9.0
+      volumes:
+        - /etc/promtail/:/etc/promtail/
+        - /var/log:/var/log
+      command: -config.file=/etc/promtail/config.yml
+    tags: [create]
+
+  - name: Stop a container
+    docker_container:
+      name: promtail
+      state: stopped
+    tags: [stop]
+
+  - name: Restart a container
+    docker_container:
+      name: promtail
+      # image: someuser/appimage
+      state: started
+      restart: yes
+      # links:
+      # - "myredis:aliasedredis"
+      # devices:
+      # - "/dev/sda:/dev/xvda:rwm"
+      # ports:
+      # - "8080:9000"
+      # - "127.0.0.1:8081:9001/udp"
+      # env:
+      #     SECRET_KEY: ssssh
+    tags: [restart]
+
+  - name: remove container
+    docker_container:
+      name: promtail
+      state: absent
+    tags: [remove]
+    

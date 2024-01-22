@@ -1,0 +1,11 @@
+{
+    "request_url": "{{ SENDER_REQUEST_URL }}",
+    "send_duration": {{ SENDER_SEND_DURATION }},
+    "send_frequency": {{ SENDER_SEND_FREQUENCY }},
+    "call_module": "{{ SENDER_CALL_MODULE }}",
+    "call_function": "{{ SENDER_CALL_FUNCTION }}",
+    "call_params": {
+        "record": "Test datalog row"
+    },
+    "senders": {{ SENDER_SECRET_SEEDS | to_nice_json }}
+}

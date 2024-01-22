@@ -1,0 +1,43 @@
+---
+- name: UPLOAD RESTART SCRIPT
+  block:
+    - name: "Create directory for scripts"
+      file:
+        path: '{{ USER_PATH }}/scripts'
+        state: directory
+        mode: 0755
+
+    - name: "Template polkadot-validator-restart.sh to user directory"
+      template:
+        src: polkadot-validator-restart.sh.j2
+        dest: '{{ USER_PATH }}/scripts/polkadot-validator-restart.sh'
+        mode: 0755
+        # owner: '{{ SERVICE_NAME }}'
+        # group: '{{ SERVICE_NAME }}'
+  tags: [ upload_restart_script ]
+
+
+- name: REMOVE CRON RULES
+  block:
+    - name: "Remove polkadot-validator-restart cron rule"
+      ansible.builtin.cron:
+        name: "polkadot-validator-restart"
+        # env: yes
+        state: absent
+    # - shell: crontab -r
+    #   notify: crond-restart
+  rescue:
+    - name: "There's no crontab for root"
+      debug: msg="It's ok, go ahead"
+  tags: [ never, remove , remove_cron_rules, stop_service ]
+
+
+- name: "Add polkadot-validator-restart.sh to crontab"
+  ansible.builtin.cron:
+    name: "polkadot-validator-restart"
+    minute: "*/5"
+    job: "{{ USER_PATH }}/scripts/polkadot-validator-restart.sh > /dev/null 2>&1"
+  notify: crond-restart
+  tags: [ set_cron_rules, start_service ]
+
+

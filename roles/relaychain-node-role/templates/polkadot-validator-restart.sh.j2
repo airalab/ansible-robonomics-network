@@ -1,0 +1,17 @@
+#!/bin/bash
+
+BEST_FINALIZED_DELTA=$(curl --fail --silent http://127.0.0.1:9615/metrics | grep polkadot_block_height | grep -e best -e finalized  | awk '{A[NR-1] = $2;} END { print A[0] - A[1] }')
+TARGET_BEST_DELTA=$(curl --fail --silent http://127.0.0.1:9615/metrics | grep polkadot_block_height | grep -e sync_target -e best | awk '{A[NR-1] = $2;} END { print A[0] - A[1] }')
+
+
+if [[ $BEST_FINALIZED_DELTA -gt 100 ]] || [[ $TARGET_BEST_DELTA -gt 100 ]]
+then
+echo restart {{ SERVICE_NAME }} service
+echo BEST_FINALIZED_DELTA = $BEST_FINALIZED_DELTA
+echo TARGET_BEST_DELTA = $TARGET_BEST_DELTA
+systemctl restart {{ SERVICE_NAME }}.service
+
+else 
+echo BEST_FINALIZED_DELTA = $BEST_FINALIZED_DELTA
+echo TARGET_BEST_DELTA = $TARGET_BEST_DELTA
+fi

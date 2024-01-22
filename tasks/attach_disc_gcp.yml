@@ -1,0 +1,28 @@
+---
+- hosts: gcp
+  user: root
+
+  tasks:
+    # - name: Get unmounted volume
+    #   shell: lsblk --json | jq
+
+    - name: Create a xfs filesystem on /dev/sdb
+      community.general.filesystem:
+        fstype: xfs
+        dev: /dev/sdb
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /mnt/base
+        state: directory
+        mode: '0755'
+
+    - name: Mount volume
+      ansible.posix.mount:
+        path: /mnt/base
+        src: /dev/sdb
+        fstype: xfs
+        opts: discard,defaults
+        state: mounted
+
+#TODO xfs_growfs

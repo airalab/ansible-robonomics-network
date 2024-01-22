@@ -1,0 +1,43 @@
+# Available tags:
+#   - change_BP_permissions   +
+#   - create_network_keys     +
+#   - start_service           +
+#   - restart_service         +
+#   - stop_service            +
+#   - upload_restart_script   +
+#   - set_cron_rules          +
+#   - remove_cron_rules       +
+#   - upload_binary           +
+#   - upload_parachain_spec   +
+#   - upload_relaychain_spec  +
+#   - upload_service          +
+#   - remove_relaychain_db    +
+#   - remove_parachain_db     +
+#   - remove_dbs              +
+#   - remove_all              +
+---
+- import_tasks: variables.yml
+
+- name: STOP EXISTING {{ SERVICE_NAME }} SERVICE
+  block:
+    - name: "Stop {{ SERVICE_NAME }} service"
+      service: name="{{ SERVICE_NAME }}.service" state=stopped
+  rescue: 
+    - debug: msg="There's no existing service named '{{ SERVICE_NAME }}'"
+  tags: [ stop_service, restart_service, upload_binary, set_service, remove_relaychain_db, remove_parachain_db, remove_dbs, remove ]
+  
+- import_tasks: users.yml
+# - import_tasks: cron.yml
+- import_tasks: binary.yml
+- import_tasks: network_keys.yml
+- import_tasks: spec.yml
+- import_tasks: service.yml
+- import_tasks: dbs.yml
+# - import_tasks: kusama.yml
+
+- name: Start {{ SERVICE_NAME }} service
+  service:
+    name: "{{ SERVICE_NAME }}.service"
+    state: restarted
+    enabled: yes
+  tags: [ start_service, restart_service ]

@@ -1,0 +1,27 @@
+---
+- name: "Create {{ SERVICE_NAME }} user"
+  user:
+    name: "{{ SERVICE_NAME }}"
+    shell: /bin/bash
+    createhome: yes
+    system: yes       
+    home: "{{ USER_PATH }}"
+    state: present
+  tags: [ create_user ]
+
+- name: "Change base path permissions"
+  file:
+    path: "{{ BASE_PATH }}"
+    state: directory
+    mode: 0755
+    owner: "{{ SERVICE_NAME }}"
+    group: "{{ SERVICE_NAME }}"
+  tags: [ change_BP_permissions ]
+
+
+- name: "Remove {{ SERVICE_NAME }} user"
+  ansible.builtin.user:
+    name: "{{ SERVICE_NAME }}"
+    state: absent
+    remove: yes
+  tags: [ never, remove ]

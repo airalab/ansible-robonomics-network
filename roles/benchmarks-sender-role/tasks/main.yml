@@ -1,0 +1,14 @@
+---
+- set_fact: USER_PATH='/home/{{ USER_NAME }}'
+
+- name: "Create sender's user"
+  user:
+    name: "{{ USER_NAME }}"
+    shell: /bin/bash
+    # system: no       
+    createhome: yes
+    home: "{{ USER_PATH }}"
+    state: present
+
+- import_tasks: py-sender.yml
+# - import_tasks: js-sender.yml

@@ -1,0 +1,30 @@
+---
+- name: Copy script folder to the server
+# Synchronize two directories on one remote host.
+  synchronize:
+    src: py-sender
+    dest: "{{ USER_PATH }}"
+  # delegate_to: "{{ inventory_hostname }}"
+
+- name: Template sender script config
+  template:
+        src: py-sender/py-sender-config.json.j2
+        dest: '{{ USER_PATH }}/py-sender/config.json'
+        mode: 0755
+        owner: '{{ USER_NAME }}'
+        group: '{{ USER_NAME }}'
+
+- file: dest="{{ USER_PATH }}/py-sender" owner="{{ USER_NAME }}" group="{{ USER_NAME }}" mode=u=rwX,g=rX,o=rX recurse=yes
+
+- name: Install python3-pip, virtualenv
+  apt:
+    name: 
+      - python3-pip
+      - virtualenv
+    state: present
+
+- name: pip3 install requirements
+  pip:
+    requirements: '{{ USER_PATH }}/py-sender/requirements.txt'
+    virtualenv: '{{ USER_PATH }}/py-sender/venv'
+    virtualenv_python: python3

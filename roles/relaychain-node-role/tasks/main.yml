@@ -1,0 +1,86 @@
+###############################
+###     Available tags:     ###
+###############################
+#   - init                    #
+#   - start_service           #
+#   - restart_service         #
+#   - stop_service            #
+#   - upload_restart_script   #
+#   - set_cron_rules          #
+#   - remove_cron_rules       #
+#   - upload_binary           #
+#   - upload_spec             #
+#   - upload_service          #
+#   - remove_db               #
+#   - remove                  #
+#   - add_validators          #
+###############################
+---
+- import_tasks: variables.yml
+
+- name: Check if {{ SERVICE_NAME }} service exists
+  stat: path=/etc/systemd/system/{{ SERVICE_NAME }}.service
+  register: service_status
+  tags: [ always ]
+
+- name: Stop {{ SERVICE_NAME }} service
+  service: name={{ SERVICE_NAME }} state=stopped
+  when: service_status.stat.exists
+  register: service_stopped
+  tags: [ stop_service, restart_service, upload_service, remove_db, upload_spec, upload_binary, remove, add_validators ]
+
+- name: "Remove {{ BASE_PATH }}/chains/{{ CHAIN_ID }}/{{ DB_DIRECTORY_NAME }}"
+  file:
+    path:  "{{ BASE_PATH }}/chains/{{ CHAIN_ID }}/{{ DB_DIRECTORY_NAME }}"
+    state: absent
+  tags: [ never, remove_db ]
+
+- import_tasks: users.yml
+
+- name: Upload created validators files
+  copy:
+    src:  "{{ inventory_dir }}/data/uploads/validators/{{ inventory_hostname }}/"
+    dest: "{{ BASE_PATH }}/chains/{{ CHAIN_ID }}/"
+    owner: "{{ SERVICE_NAME }}"
+    group: "{{ SERVICE_NAME }}"
+    mode: '0644'
+    backup: yes
+  # when: NODE_TYPE == 'validator'
+  when: inventory_hostname in groups["validators"]
+  tags: [ never, init ]
+
+- name: Upload {{ inventory_dir }}/data/uploads/polkadot to /usr/local/bin/polkadot
+  copy:
+    src: "{{ inventory_dir }}/data/uploads/polkadot"
+    dest: /usr/local/bin/polkadot
+    owner: "{{ SERVICE_NAME }}"
+    group: "{{ SERVICE_NAME }}"
+    mode: u=rwx,g=rx,o=rx
+    backup: yes
+  tags: [ init, upload_binary, add_validators ]
+
+- name: "Upload {{ inventory_dir }}/data/uploads/spec.json to {{ SPEC_PATH }}"
+  copy:
+    src: "{{ inventory_dir }}/data/uploads/spec.json"
+    dest: "{{ SPEC_PATH }}"
+    owner: "{{ SERVICE_NAME }}"
+    group: "{{ SERVICE_NAME }}"
+    mode: '0644'
+    backup: yes
+  tags: [ init, upload_spec, add_validators ]
+
+- import_tasks: service.yml
+
+- name: Start polkadot service and ensure it is in a running state
+  service:
+    name: "{{ SERVICE_NAME }}"
+    state: started
+  register: service_details
+  until: service_details.status.ActiveState == "active"
+  retries: 15
+  delay: 5
+  tags: [ init, start_service, restart_service, add_validators ]
+
+- import_tasks: add_validators.yml
+- import_tasks: network_keys.yml
+

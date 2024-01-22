@@ -1,0 +1,4 @@
+jmespath
+pandas
+numpy
+substrate-interface

@@ -1,0 +1,37 @@
+[Unit]
+Description={{ SERVICE_NAME }}
+After=network.target
+
+[Service]
+User={{ SERVICE_NAME }}
+Group={{ SERVICE_NAME }}
+Type=simple
+WorkingDirectory={{ USER_PATH }}
+Restart=on-failure
+
+ExecStart=/usr/local/bin/{{ SERVICE_NAME }} \
+--name="{{ inventory_hostname }}" \
+{% if CUSTOM_PARACHAIN_SPEC == true %}--chain={{ PARACHAIN_SPEC_PATH }} \
+{% endif %}
+{% if PARACHAIN_ID > 2000 %}--parachain-id={{ PARACHAIN_ID }} \
+{% endif %}
+--telemetry-url="{{ TELEMETRY_URL }}" \
+--validator \
+--in-peers=500 \
+--out-peers=500 \
+--no-mdns \
+--execution=Wasm \
+--prometheus-external \
+--prometheus-port=9615 \
+--state-cache-size=0 \
+-- \
+{% if CUSTOM_RELAYCHAIN_SPEC == true %}--chain={{ RELAYCHAIN_SPEC_PATH }} \
+{% endif %}
+--execution=Wasm \
+--in-peers=500 \
+--out-peers=500 \
+--prometheus-external \
+--prometheus-port=9616
+
+[Install]
+WantedBy=multi-user.target

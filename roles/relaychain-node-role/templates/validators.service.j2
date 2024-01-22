@@ -1,0 +1,26 @@
+[Unit]
+Description={{ SERVICE_NAME }}
+After=network.target
+
+[Service]
+User={{ SERVICE_NAME }}
+Group={{ SERVICE_NAME }}
+Type=users
+WorkingDirectory={{ USER_PATH }}
+Restart=on-failure
+ExecStart=/usr/local/bin/polkadot \
+--chain={{ SPEC_PATH }} \
+--base-path={{ BASE_PATH }} \
+--prometheus-external \
+--name={{ inventory_hostname }} \
+--validator \
+--in-peers=500 \
+--out-peers=500 \
+--force-rococo \
+--execution=Wasm \
+--ipfs-server \
+# --kademlia-disjoint-query-paths \
+--trie-cache-size=0
+
+[Install]
+WantedBy=multi-user.target

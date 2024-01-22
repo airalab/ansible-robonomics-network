@@ -1,0 +1,4 @@
+---
+REQUEST_URL: "wss://mercury.frontier.rpc.robonomics.network"
+SEND_DURATION: 1
+SEND_FREQUENCY: 10

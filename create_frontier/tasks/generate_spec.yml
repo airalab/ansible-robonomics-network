@@ -1,0 +1,45 @@
+---
+- name: Create validators keys
+  shell: "{{ DATA_PATH }}/uploads/polkadot key generate"
+  with_sequence: count={{ hostvars[inventory_hostname]['groups']['validators']|length }}
+  register: validators
+
+- debug: msg='{{ validators.results }}'
+
+
+- name: ==BACKUP VALIDATORS KEYS== Remove local validators keys folder if it exists
+  file: 
+    path: "{{ DATA_PATH }}/local/keys/validators"
+    state: absent
+
+- name: ==BACKUP VALIDATORS KEYS== Create local validators keys folder
+  file: 
+    path: "{{ DATA_PATH }}/local/keys/validators"
+    state: directory
+
+- name: ==BACKUP VALIDATORS KEYS== Create validators key files
+  copy:
+    dest: "{{ DATA_PATH }}/local/keys/validators/{{ item.stdout_lines[-1].split(' ')[-1] }}"
+    content: | 
+      "{{ item.stdout_lines[0].split('Secret phrase:       ')[1] }}"
+  with_items: '{{ validators.results }}'
+
+- set_fact:
+    validators_keys: "{{ validators_keys | default([]) + [item.stdout_lines[-1].split(' ')[-1]] }}"
+  with_items: '{{ validators.results }}'
+
+- debug: msg={{ validators_keys }}
+
+- name: Template balances.json.j2 to {{ DATA_PATH }}/balances.json
+  template:
+    src: balances.json.j2
+    dest: "{{ DATA_PATH }}/balances.json"
+
+- name: Template session.json.j2 to {{ DATA_PATH }}/session_keys.json
+  template:
+    src: session.json.j2
+    dest: "{{ DATA_PATH }}/session_keys.json"
+
+- name: Run script to generate spec-src.json
+  script: create_frontier_spec.py -C {{ playbook_dir }}/../config/main.json -I {{ DATA_PATH }}/polkadot_tmp_spec.json -O {{ DATA_PATH }}/uploads/spec-src.json -B {{ DATA_PATH }}/balances.json -S {{ DATA_PATH }}/session_keys.json -s {{ sudo_address }}
+  

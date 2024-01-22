@@ -1,0 +1,26 @@
+- name: Stop polkadot service
+  service:
+    name: polkadot
+    state: stopped
+  listen: service_stop
+
+- name: Start polkadot service
+  service:
+    name: polkadot
+    state: started
+  listen: service_start
+
+- name: Restart polkadot service
+  service:
+    name: polkadot
+    state: restarted
+  listen: service_restart
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+  listen: systemd_reload
+
+- name: crond-restart
+  service:
+    name: cron
+    state: restarted

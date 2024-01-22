@@ -1,9 +1,0 @@
----
-- name: Set timezone to UTC
-  shell: timedatectl set-timezone UTC
-
-# It is recommended to restart crond after changing the timezone, otherwise the jobs may run at the wrong time.
-- name: Restart crond
-  service:
-    name: cron
-    state: restarted

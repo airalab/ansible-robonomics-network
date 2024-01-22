@@ -1,0 +1,15 @@
+---
+- name: Copy js-sender folder to the host
+  ansible.builtin.copy:
+    src: js-sender
+    dest: /root/
+    mode: '0644'
+
+- name: Install packages based on package.json.
+  community.general.npm:
+    path: /root/js-sender
+
+- name: npm build
+  command: npm run build
+  args:
+    chdir: "/root/js-sender"

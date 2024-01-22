@@ -1,0 +1,6 @@
+{% set lst = [] -%}
+{% for k in nodes_session_keys -%}
+    {% set lst_item = [validators_keys[loop.index-1], validators_keys[loop.index-1], k] -%}
+    {% set lst = lst.append(lst_item) -%}
+{% endfor -%}
+{{ lst | to_nice_json }}

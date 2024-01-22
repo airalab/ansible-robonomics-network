@@ -1,0 +1,7 @@
+---
+# - hosts: validators[0:7]:bootnodes:public_nodes
+- hosts: all
+  user: root
+
+  roles:
+    - relaychain-node-role

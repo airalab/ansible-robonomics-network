@@ -1,0 +1,95 @@
+---
+- name: "ROTATE KEYS"
+  block:
+    - name: ==KEYSTORE== Remove remote validator's keystore dir if it exists
+      file: 
+        path: "{{ REMOTE_VALIDATOR_DIR }}/keystore"
+        state: absent
+
+    - name: ==KEYSTORE== Create validator's keystore dir
+      file: 
+        path: "{{ REMOTE_VALIDATOR_DIR }}/keystore"
+        owner: "{{ SERVICE_NAME }}"
+        group: "{{ SERVICE_NAME }}"
+        state: directory 
+        mode: "0755"
+
+    - name: ==KEYSTORE== Rotate Keys
+      uri:
+        url: http://localhost:9933 
+        method: POST
+        body: '{"id":1, "jsonrpc":"2.0", "method": "author_rotateKeys", "params":[]}'
+        headers:  
+          Content-Type: application/json
+        return_content: yes
+      register: rotate_keys_result
+
+    - name: ==KEYSTORE== ROTATE_KEYS result
+      debug:
+        msg: '{{ rotate_keys_result }}'
+
+    - name: ==KEYSTORE== Create the new local validator directory
+      local_action:
+        module: file
+        path: "{{ LOCAL_VALIDATOR_DIR }}"
+        state: directory
+        mode: "0755"
+
+    - name: ==KEYSTORE== Save rotate_keys_result locally
+      local_action: 
+        module: copy
+        content: "{{ rotate_keys_result['json']['result'] }}" 
+        dest: "{{ LOCAL_VALIDATOR_DIR }}/rotate_keys_result.txt"
+
+    - name: ==KEYSTORE== Remove local validator's keystore folder if it exists
+      local_action:
+        module: file 
+        path: "{{ LOCAL_VALIDATOR_DIR }}/keystore"
+        state: absent
+
+    - name: ==KEYSTORE== Find on remote host keystore files for backup
+      shell: (cd {{ REMOTE_VALIDATOR_DIR }}/keystore/; find . -maxdepth 1 -type f) | cut -d'/' -f2
+      register: files_to_copy
+
+    - name: ==KEYSTORE== Backup validator's keystore locally
+      fetch: src={{ REMOTE_VALIDATOR_DIR }}/keystore/{{ item }} dest={{ LOCAL_VALIDATOR_DIR }}/keystore/ flat=yes
+      with_items: "{{ files_to_copy.stdout_lines }}"
+
+
+    - name: Create validator account
+      local_action: shell {{ inventory_dir }}/data/uploads/polkadot key generate
+      args:
+        executable: /bin/bash
+      register: new_validator_account
+
+    - debug: msg={{ new_validator_account.stdout_lines }}
+
+    - set_fact:
+        mnemonic: "{{ new_validator_account.stdout_lines[0].split('Secret phrase:       ')[-1] }}"
+        ss58_address: "{{ new_validator_account.stdout_lines[-1].split(' ')[-1] }}"
+ 
+    - name: ==ACCOUNT== Save validator account locally
+      local_action: 
+        module: copy
+        content: "{{ ss58_address }}\n{{ mnemonic }}" 
+        dest: "{{ LOCAL_VALIDATOR_DIR }}/account.txt"
+
+    - name: Set balance
+      local_action: shell python {{ role_path }}/files/set_balance.py -T "{{ ss58_address }}" -S "{{ SUDO }}" -E "{{ hostvars[groups['public_nodes'][0]]['endpoint'] }}"
+      throttle: 1
+      register: set_balance_res
+
+    - debug: msg={{set_balance_res}}
+
+
+    - name: Set keys
+      local_action: shell python {{ role_path }}/files/set_keys.py  -M "{{ mnemonic }}" -K "{{ rotate_keys_result['json']['result'] }}" -E "{{ hostvars[groups['public_nodes'][0]]['endpoint'] }}"
+      register: set_keys_res
+
+    # - name: Register validators
+    #   local_action: shell python {{ role_path }}/files/register_validators.py -S "{{ SUDO }}" -E "{{ hostvars[groups['public_nodes'][0]]['endpoint'] }}"
+    #   register: res
+
+    - debug: msg={{set_keys_res}}
+
+  tags: [ never, add_validators ]

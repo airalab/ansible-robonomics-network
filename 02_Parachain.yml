@@ -1,0 +1,20 @@
+---
+- hosts: all
+  user: root
+
+  roles:
+    # Available tags:
+    #   - change_BP_permissions   +
+    #   - create_network_keys     +
+    #   - start_service           +
+    #   - restart_service         +
+    #   - stop_service            +
+    #   - upload_binary           +
+    #   - upload_parachain_spec   +
+    #   - upload_relaychain_spec  +
+    #   - upload_service          +
+    #   - remove_relaychain_db    +
+    #   - remove_parachain_db     +
+    #   - remove_dbs              +
+    #   - remove_all              +
+    - parachain-node-role

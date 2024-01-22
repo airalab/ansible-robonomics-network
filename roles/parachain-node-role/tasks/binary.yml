@@ -1,0 +1,9 @@
+---
+- name: "Upload {{ inventory_dir }}/data/uploads/{{ BINARY_NAME }} to /usr/local/bin/{{ BINARY_NAME }}"
+  copy: src={{ inventory_dir }}/data/uploads/{{ BINARY_NAME }}  dest=/usr/local/bin/{{ BINARY_NAME }} mode='0755'
+  tags: [ upload_binary ]
+
+
+- name: REMOVE /usr/local/bin/{{ BINARY_NAME }}
+  file: path=/usr/local/bin/{{ BINARY_NAME }} state=absent
+  tags: [ never, remove ]

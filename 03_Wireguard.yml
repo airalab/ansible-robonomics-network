@@ -1,0 +1,6 @@
+---
+- hosts: wg
+  user: root
+
+  roles:
+    - githubixx.ansible_role_wireguard

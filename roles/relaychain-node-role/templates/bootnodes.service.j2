@@ -1,0 +1,27 @@
+[Unit]
+Description={{ SERVICE_NAME }}
+After=network.target
+
+[Service]
+User={{ SERVICE_NAME }}
+Group={{ SERVICE_NAME }}
+Type=users
+WorkingDirectory={{ USER_PATH }}
+Restart=on-failure
+ExecStart=/usr/local/bin/polkadot \
+--chain={{ SPEC_PATH }} \
+--base-path={{ BASE_PATH }} \
+--prometheus-external \
+--pruning=archive \
+--name={{ inventory_hostname }} \
+--in-peers=500 \
+--out-peers=500 \
+--force-rococo \
+# --kademlia-disjoint-query-paths \
+--execution=Wasm \
+# --listen-addr="/ip4/0.0.0.0/tcp/30333/ws" \
+# --listen-addr="/ip6/::/tcp/30333/ws" \
+--trie-cache-size=0
+
+[Install]
+WantedBy=multi-user.target

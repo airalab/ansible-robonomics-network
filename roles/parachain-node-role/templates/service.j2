@@ -1,0 +1,30 @@
+[Unit]
+Description={{ SERVICE_NAME }}
+After=network.target
+
+[Service]
+User={{ SERVICE_NAME }}
+Group={{ SERVICE_NAME }}
+Type=simple
+WorkingDirectory={{ USER_PATH }}
+Restart=on-failure
+
+ExecStart=/usr/local/bin/{{ BINARY_NAME }} \
+{% for key, value in PARACHAIN_PARAMETERS.items() if value %}
+{% if value is sameas true -%}--{{key}} \
+{% elif value.__class__.__name__ == 'list' %}{% for item in value %}--{{key}}={{item}} \
+{% endfor %}
+{% else %}--{{key}}={{value}} \
+{% endif %}
+{% endfor %}
+-- \
+{% for key, value in RELAYCHAIN_PARAMETERS.items() if value %}
+{% if value is sameas true -%}--{{key}} \
+{% elif value.__class__.__name__ == 'list' %}{% for item in value %}--{{key}}={{item}} \
+{% endfor %} 
+{% else %}--{{key}}={{value}} \
+{% endif %}
+{% endfor %}
+
+[Install]
+WantedBy=multi-user.target

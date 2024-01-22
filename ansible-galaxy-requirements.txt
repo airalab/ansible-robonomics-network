@@ -1,4 +1,15 @@
-ansible-galaxy install undergreen.prometheus-node-exporter
+ansible-galaxy install cloudalchemy.node_exporter
+
 ansible-galaxy install geerlingguy.nodejs
-ansible-galaxy collection install hetzner.hcloud
+ansible-galaxy install geerlingguy.pip
+ansible-galaxy install geerlingguy.docker
+
+ansible-galaxy install githubixx.ansible_role_wireguard
+ansible-galaxy install community.grafana
+
 ansible-galaxy collection install community.general
+ansible-galaxy collection install ansible.posix
+ansible-galaxy install nginxinc.nginx
+ansible-galaxy install geerlingguy.certbot
+
+ansible-galaxy collection install community.windows

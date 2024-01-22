@@ -1,0 +1,30 @@
+---
+- block:
+    - block:
+        - name: Get additional volume name
+          shell: ls /mnt/
+          register: VOLUME_NAME
+        - name: BASE_PATH="/mnt/{{ VOLUME_NAME.stdout }}"
+          set_fact: BASE_PATH="/mnt/{{ VOLUME_NAME.stdout }}"
+      when: HAS_ADDITIONAL_VOLUME
+
+    - set_fact: BASE_PATH="{{ USER_PATH }}/.local/share/{{ BINARY_NAME }}"
+      when: not HAS_ADDITIONAL_VOLUME
+
+    - name: Print required variables
+      debug: 
+        msg: 
+          - var SERVICE_NAME={{ SERVICE_NAME }}
+          - var USER_PATH={{ USER_PATH }}
+          - var PARACHAIN_NAME={{ PARACHAIN_NAME }}
+          - var BASE_PATH={{ BASE_PATH }}
+          - var RELAYCHAIN_NAME={{ RELAYCHAIN_NAME }}
+
+    - name: Print optional variables
+      debug: msg="PARACHAIN_SPEC_PATH={{ PARACHAIN_SPEC_PATH }}"
+      when: PARACHAIN_SPEC_PATH is defined
+
+    - name: Print optional variables
+      debug: msg="RELAYCHAIN_SPEC_PATH={{ RELAYCHAIN_SPEC_PATH }}"
+      when: RELAYCHAIN_SPEC_PATH is defined
+  tags: [ always ]

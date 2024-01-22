@@ -1,0 +1,10 @@
+---
+- hosts: benchmarks_senders
+  user: root
+  # vars_files:
+  #   - vars/nodejs.yml
+  roles:
+    - common-role
+    - robonomics-node-role
+    # - geerlingguy.nodejs
+    - benchmarks-sender-role

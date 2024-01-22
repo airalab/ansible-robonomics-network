@@ -1,8 +1,0 @@
-[parachain-main-collators]
-192.168.0.1         name=example-main-collator
-
-[parachain-ipci-collators]
-192.168.0.2         name=example-ipci-collator
-
-[parachain-mercury-collators]
-192.168.0.3         name=example-mercury-collator

@@ -1,0 +1,9 @@
+---
+- hosts: all
+  user: root
+
+  tasks:
+    - shell: "crontab -l"
+      register: cron_msg
+
+    - debug: msg={{cron_msg}}

@@ -1,0 +1,34 @@
+---
+- block:
+    - name: ==NETWORK== Create NETWORK a directory if it does not exist
+      file:
+        path: "{{ RELAYCHAIN_NETWORK_KEY_PATH }}"
+        state: directory
+        mode: "0755"
+      become: yes
+      become_user: "{{ SERVICE_NAME }}"
+
+    - name: ==NETWORK== Create secret_ed25519 for every node
+      shell: "robonomics key generate-node-key --file {{ RELAYCHAIN_NETWORK_KEY_PATH }}/secret_ed25519"
+      become: yes
+      become_user: "{{ SERVICE_NAME }}"
+      register: network_key
+
+    - debug: msg="{{ network_key }}"
+  tags: [ never, create_network_keys ]
+
+
+- block:
+    - name: Create local directory for network key
+      local_action: 
+        module: file 
+        path: "{{ inventory_dir }}/data/local/{{ inventory_hostname }}/network"
+        state: directory
+        mode: "0755"
+
+    - name: Download secret_ed25519 to local dir
+      fetch: 
+        src: "{{ RELAYCHAIN_NETWORK_KEY_PATH }}/secret_ed25519"
+        dest: "{{ inventory_dir }}/data/local/{{ inventory_hostname }}/network/secret_ed25519"
+        flat: yes
+  tags: [ never, create_network_keys, backup_network_keys ]

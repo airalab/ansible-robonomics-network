@@ -1,0 +1,37 @@
+---
+###############################
+########## NETWORK  ###########
+###############################
+- block:
+    - name: ==NETWORK== Create NETWORK a directory if it does not exist
+      file:
+        path: "{{ PARACHAIN_NETWORK_KEY_PATH }}"
+        state: directory
+        mode: "0755"
+      become: yes
+      become_user: "{{ SERVICE_NAME }}"
+
+    - name: ==NETWORK== Create secret_ed25519 for every node
+      shell: "robonomics key generate-node-key --file {{ PARACHAIN_NETWORK_KEY_PATH }}/secret_ed25519"
+      become: yes
+      become_user: "{{ SERVICE_NAME }}"
+      register: network_key
+
+    - debug: msg="{{ network_key }}"
+  tags: [ never, create_network_keys ]
+
+
+- block:
+    - file: 
+        path: "{{ inventory_dir }}/data/local/{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/network"
+        state: directory
+        mode: "0755"
+
+    - fetch: 
+        src: "{{ PARACHAIN_NETWORK_KEY_PATH }}/secret_ed25519"
+        dest: "{{ inventory_dir }}/data/local/{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}/network/secret_ed25519"
+  tags: [ never, create_network_keys, backup_network_keys ]
+
+###############################
+########## /NETWORK  ##########
+###############################

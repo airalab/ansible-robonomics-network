@@ -1,0 +1,6 @@
+---
+- hosts: wg
+  user: root
+
+  roles:
+    - cloudalchemy.node_exporter

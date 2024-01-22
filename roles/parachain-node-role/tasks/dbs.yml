@@ -1,0 +1,12 @@
+---
+- name: "Remove relaychain db"
+  file:
+    path: '{{ BASE_PATH }}/polkadot/chains/{{ RELAYCHAIN_NAME }}/{{ DB_DIRECTORY_NAME }}'
+    state: absent 
+  tags: [ never, remove_relaychain_db, remove_dbs ]
+
+- name: "Remove parachain db"
+  file:
+    path: '{{ BASE_PATH }}/chains/{{ PARACHAIN_NAME }}/{{ DB_DIRECTORY_NAME }}'
+    state: absent
+  tags: [ never, remove_parachain_db, remove_dbs ]

@@ -1,0 +1,11 @@
+{% set lst = [] -%}
+{% for k in validators_keys -%}
+  {% set lst_item = [k, 1000000000000000000] -%}
+  {% set lst = lst.append(lst_item) -%}
+{% endfor -%}
+{% for k in config.spec.static_accounts -%}
+  {% set lst_item = [k, 1000000000000000000] -%}
+  {% set lst = lst.append(lst_item) -%}
+{% endfor -%}
+{{ lst.append([sudo_address, 1000000000000000000]) -}}
+{{ lst | to_nice_json }}

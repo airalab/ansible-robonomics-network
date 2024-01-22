@@ -1,0 +1,10 @@
+---
+- hosts: all
+  user: root
+
+  tasks:
+    - name: Get df -h
+      shell: df -h
+      register: result
+
+    - debug: msg={{ result.stdout_lines }}

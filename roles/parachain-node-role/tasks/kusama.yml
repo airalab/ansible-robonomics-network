@@ -1,0 +1,22 @@
+---
+- name: Download kusama snapshot
+  get_url:
+    url: "{{ KUSAMA_SNAPSHOT_URL }}"
+    dest: "{{ USER_PATH }}"
+    mode: '0440'
+  when: DOWNLOAD_KUSAMA_SNAPSHOT
+
+
+- name: Unzip kusama snapshot .7z file
+  community.windows.win_unzip:
+    src: '{{ USER_PATH }}/{{ KUSAMA_SNAPSHOT_URL }}'
+    dest: '{{ USER_PATH }}/.local/share/polkadot/chains/ksmcc3'
+    # password: abcd
+    delete_archive: yes
+  when: DOWNLOAD_KUSAMA_SNAPSHOT
+
+
+# - name: Remove file (delete file)
+#   ansible.builtin.file:
+#     path: /etc/foo.txt
+#     state: absent

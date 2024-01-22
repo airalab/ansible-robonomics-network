@@ -1,0 +1,29 @@
+---
+- name: Template service file
+  template:
+    src: "{{ item }}.service.j2"
+    dest: /etc/systemd/system/{{ SERVICE_NAME }}.service
+  notify: 
+    - systemd_reload
+    - service_restart
+  when: inventory_hostname in groups[item]
+  loop: [ bootnodes, validators, public_nodes ]
+  tags: [ init, upload_service ]
+
+- name: Template validators service file for validators_candidates
+  template:
+    src: validators.service.j2
+    dest: /etc/systemd/system/{{ SERVICE_NAME }}.service
+  when: inventory_hostname in groups["validators_candidates"]
+  tags: [ add_validators ]
+
+- name: Remove service file
+  block:
+    - name: Delete service file
+      file:
+        path: /etc/systemd/system/{{ SERVICE_NAME }}.service
+        state: absent
+  rescue: 
+    - name: Can't delete service file
+      debug: msg="There's no existing service file, run the next task"
+  tags: [ never, remove_service, remove ]

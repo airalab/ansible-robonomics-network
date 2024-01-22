@@ -1,31 +1,16 @@
 # ansible-robonomics-network
-Ansible playbooks for Robonomics network management.
+Ansible playbooks for Robonomics networks management.
 
 ## Requirements
 - Ansible: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html
 
 ## Usage
-### Robonomics collator role
-- Launch Robonomics main collator:
+### Example
 
-  ``` ansible-playbook -i inventory.ini collators-Earth.yml ```
+- Execute 01_Common.yml tags for specified inventory and hosts:
 
-- Remove Robonomics main collator:
+  ``` ansible-playbook -i path/to/inventory/file ./01_Common.yml -l collators[2] -t tag1,tag3```
 
-  ``` ansible-playbook -i inventory.ini collators-Earth.yml -t remove ```
+- Get all tags available in the playbook:
 
-- Stop Robonomics main collator service:
-
-  ``` ansible-playbook -i inventory.ini collators-Earth.yml -t stop_service ```
-
-- Start Robonomics main collator service:
-
-  ``` ansible-playbook -i inventory.ini collators-Earth.yml -t start_service ```
-
-- Restart Robonomics main collator service:
-
-  ``` ansible-playbook -i inventory.ini collators-Earth.yml -t restart_service ```
-
-- Update Robonomics main collator service and start it:
-
-  ``` ansible-playbook -i inventory.ini collators-Earth.yml -t set_service -t start_service ```
+  ``` ansible-playbook 02_Parachain.yml --list-tags ```

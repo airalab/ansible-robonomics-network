@@ -1,0 +1,49 @@
+---
+- hosts: public_nodes
+  user: root
+
+  tasks:
+    - ufw: state=reset
+    - ufw: state=disabled
+
+    - ufw: direction=incoming default=deny 
+    - ufw: direction=outgoing default=allow 
+
+    - ufw: rule=allow name=OpenSSH
+    - ufw: rule=allow port='30333'
+    - ufw: rule=allow port='30334'
+
+    ### Public nodes ###
+    - name: Allow 80 and 443 ports (only for public nodes)
+      ufw:
+        rule: allow
+        port: '{{ item }}'
+      loop:
+        - '80'
+        - '443'
+      when: inventory_hostname in groups['public_nodes']
+       
+    - name: Deny out connections to private networks
+      ufw:
+        rule: deny
+        direction: out
+        dest: '{{ item }}'
+        insert: 1
+        comment: 'Hetzner'
+      loop:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - 100.64.0.0/10
+        - 198.18.0.0/15
+        - 169.254.0.0/16
+
+    ### WireGuard ###
+    - ufw: rule=allow port='51820' comment='Allow wireguard port' 
+    - ufw: rule=allow direction=out dest=10.69.0.0/24 comment='Allow wireguard subnet' insert=1
+    
+    - ufw: rule=allow direction=in interface=wg0 port='9944' comment='Allow RPC for parachain'
+    - ufw: rule=allow direction=in interface=wg0 port='9615' comment='Allow Prometeus for parachain'
+    - ufw: rule=allow direction=in interface=wg0 port='9616' comment='Allow Prometeus for relaychain'
+    - ufw: rule=allow direction=in interface=wg0 port='9100' comment='Allow Node Exporter'
+    - ufw: state=enabled

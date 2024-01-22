@@ -1,0 +1,21 @@
+---
+- block:
+    - block:
+        - name: Get additional volume name
+          shell: ls /mnt/
+          register: VOLUME_NAME
+        - name: BASE_PATH="/mnt/{{ VOLUME_NAME.stdout }}"
+          set_fact: BASE_PATH="/mnt/{{ VOLUME_NAME.stdout }}"
+      when: HAS_ADDITIONAL_VOLUME
+
+    - set_fact: BASE_PATH="{{ USER_PATH }}/.local/share/{{ BINARY_NAME }}"
+      when: not HAS_ADDITIONAL_VOLUME
+
+    - name: Print required variables
+      debug: 
+        msg: 
+          - var SERVICE_NAME={{ SERVICE_NAME }}
+          - var USER_PATH={{ USER_PATH }}
+          - var BASE_PATH={{ BASE_PATH }}
+          - var SPEC_PATH={{ SPEC_PATH }}
+  tags: [ always ]

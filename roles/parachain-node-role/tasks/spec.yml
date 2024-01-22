@@ -1,0 +1,10 @@
+---
+- name: "Upload {{ inventory_dir }}/data/uploads/parachain-spec.json to {{ PARACHAIN_SPEC_PATH }}"
+  copy: src={{ inventory_dir }}/data/uploads/parachain-spec.json  dest={{ PARACHAIN_SPEC_PATH }} mode='0755' owner={{ SERVICE_NAME }} group={{ SERVICE_NAME }}
+  when: PARACHAIN_SPEC_PATH is defined
+  tags: [ upload_parachain_spec ]
+
+- name: "Upload {{ inventory_dir }}/data/uploads/relaychain-spec.json to {{ RELAYCHAIN_SPEC_PATH }}"
+  copy: src={{ inventory_dir }}/data/uploads/relaychain-spec.json  dest={{ RELAYCHAIN_SPEC_PATH }} mode='0755' owner={{ SERVICE_NAME }} group={{ SERVICE_NAME }}
+  when: RELAYCHAIN_SPEC_PATH is defined
+  tags: [ upload_relaychain_spec ]

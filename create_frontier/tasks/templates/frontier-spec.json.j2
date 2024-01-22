@@ -1,0 +1,111 @@
+{
+  "name": "{{ config.spec.name }}",
+  "id": "{{ config.spec.id }}",
+  "chainType": "{{ config.spec.chainType }}",
+  "bootNodes": [],
+  "telemetryEndpoints": [
+    [
+      "/dns/{{ config.spec.telemetryUrl }}/tcp/443/x-parity-wss/%2Fsubmit%2F",
+      0
+    ]
+  ],
+  "protocolId": "{{ config.spec.protocolId }}",
+  "properties": null,
+  "forkBlocks": null,
+  "badBlocks": null,
+  "consensusEngine": null,
+  "lightSyncState": null,
+  "genesis": {
+    "runtime": {
+      "runtime_genesis_config": {
+        "system": {
+              "changesTrieConfig": null,
+              "code": "{{ polkadot_tmp_spec.genesis.runtime.runtime_genesis_config.system.code }}"
+        },
+        "babe": {
+          "authorities": [],
+          "epochConfig": {
+            "c": [
+              1,
+              4
+            ],
+            "allowed_slots": "PrimaryAndSecondaryVRFSlots"
+          }
+        },
+        "indices": {
+          "indices": []
+        },
+        "balances": {
+          "balances": {% set lst = [] -%}
+                      {% for k in validators_keys -%}
+                        {% set lst_item = [k, 1000000000000000000] -%}
+                        {% set lst = lst.append(lst_item) -%}
+                      {% endfor -%}
+                      {% for k in config.spec.static_accounts -%}
+                        {% set lst_item = [k, 1000000000000000000] -%}
+                        {% set lst = lst.append(lst_item) -%}
+                      {% endfor -%}
+                      {{ lst.append([sudo_address, 1000000000000000000]) -}}
+                      {{ lst | to_nice_json }}
+        },
+        "session": {
+          "keys": {% set lst = [] -%}
+                  {% for k in nodes_session_keys -%}
+                      {% set lst_item = [validators_keys[loop.index-1], validators_keys[loop.index-1], k] -%}
+                      {% set lst = lst.append(lst_item) -%}
+                  {% endfor -%}
+                  {{ lst | to_nice_json }} 
+        },
+        "grandpa": {
+          "authorities": []
+        },
+        "imOnline": {
+          "keys": []
+        },
+        "authorityDiscovery": {
+          "keys": []
+        },
+        "configuration": {{ polkadot_tmp_spec.genesis.runtime.runtime_genesis_config.configuration | to_nice_json }},
+        "paras": {
+          "paras": []
+        },
+        "hrmp": {
+          "preopenHrmpChannels": []
+        },
+        "sudo": {
+          "key": "{{ sudo_address }}"
+        },
+        "beefy": {
+          "authorities": []
+        },
+        "bridgeRococoGrandpa": {
+          "owner": "{{ sudo_address }}",
+          "initData": null
+        },
+        "bridgeWococoGrandpa": {
+          "owner": "{{ sudo_address }}",
+          "initData": null
+        },
+        "bridgeRococoMessages": {
+          "operatingMode": "Normal",
+          "phantom": null,
+          "owner": "{{ sudo_address }}"
+        },
+        "bridgeWococoMessages": {
+          "operatingMode": "Normal",
+          "phantom": null,
+          "owner": "{{ sudo_address }}"
+        },
+        "collective": {
+          "phantom": null,
+          "members": []
+        },
+        "membership": {
+          "members": [],
+          "phantom": null
+        }
+      },
+      "session_length_in_blocks": 10
+    }
+  }
+}

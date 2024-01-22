@@ -1,0 +1,14 @@
+---
+TELEMETRY_URL:  "wss://telemetry.parachain.robonomics.network/submit/ 0"
+CHAIN_ID:       "rococo_local_testnet"
+SERVICE_NAME:   "polkadot"
+USER_PATH:      "/var/lib/{{ SERVICE_NAME }}"
+SPEC_PATH:      "{{ USER_PATH }}/spec.json"
+
+# If RocksDB use 'db', if ParityDB use 'paritydb'
+DB_DIRECTORY_NAME: "db"
+
+LOCAL_VALIDATOR_DIR: "{{ inventory_dir }}/data/uploads/validators/{{ ansible_hostname }}"
+REMOTE_VALIDATOR_DIR: "{{ USER_PATH }}/.local/share/polkadot/chains/{{ CHAIN_ID }}"
+
+RELAYCHAIN_NETWORK_KEY_PATH: "{{ BASE_PATH }}/chains/{{ CHAIN_ID }}/network"

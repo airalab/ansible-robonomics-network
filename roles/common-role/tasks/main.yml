@@ -9,6 +9,11 @@
   tags: [ time_sync ]
 
 - import_tasks: ufw.yml
+  when: "'gcp' not in group_names"
+  tags: [ set_ufw_rules ]
+
+- import_tasks: gcp_mount_volume.yml
+  when: "'gcp' in group_names"
   tags: [ set_ufw_rules ]
 
 - debug: 

@@ -1,0 +1,6 @@
+---
+- hosts: robokusama-grafana
+  user: root
+
+  roles:
+      - ansible-grafana

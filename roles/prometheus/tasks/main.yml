@@ -1,0 +1,109 @@
+- name: Creating prometheus user group
+  group: name="{{ groupId }}"
+  become: true
+
+- name: Creating prometheus user
+  user:
+    name: "{{ userId }}"
+    group: "{{ groupId }}"
+    system: yes
+    shell: "/sbin/nologin"
+    comment: "{{ userId }} nologin User"
+    createhome: "no"
+    state: present
+
+- name: Install prometheus
+  unarchive:
+    src: "https://github.com/prometheus/prometheus/releases/download/v{{ version }}/prometheus-{{ version }}.linux-amd64.tar.gz"
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copy prometheus file to bin
+  copy:
+    src: "/tmp/prometheus-{{ version }}.linux-amd64/prometheus"
+    dest: "/usr/local/bin/prometheus"
+    owner: "{{ userId }}"
+    group: "{{ groupId }}"
+    remote_src: yes
+    mode: 0755
+
+- name: Delete prometheus tmp folder
+  file:
+    path: '/tmp/prometheus-{{ version }}.linux-amd64'
+    state: absent
+    
+- name: Creates directory
+  file: 
+    path: "/data/prometheus/"
+    state: directory
+    owner: "{{ userId }}"
+    group: "{{ groupId }}"
+    mode: 0755
+
+- name: Creates directory
+  file: 
+    path: "/etc/prometheus/"
+    state: directory
+    owner: "{{ userId }}"
+    group: "{{ groupId }}"
+    mode: 0755
+
+- name: Template config file
+  template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+  notify: prometheus_restart
+  tags: [generate_common_config]
+
+- name: Add static lines in the prometheus main config
+  ansible.builtin.blockinfile:
+    path: /etc/prometheus/prometheus.yml
+    block: | 
+      {{ PROMETHEUS_STATIC_CONFIG | indent(width=2, first=True)}}
+    marker: "# {mark} PROMETHEUS_STATIC_CONFIG"
+  when: PROMETHEUS_STATIC_CONFIG is defined
+  notify: prometheus_restart
+  tags: [generate_common_config]
+
+
+- name: Template file-based service discovery targets
+  template:
+    src: file_sd.yml.j2
+    dest: /etc/prometheus/{{ item }}.yml
+    # vars:
+    #   groupForObserve: "{{ item }}"
+  loop: 
+    "{{ groups | select('match', '.*_prometheus') }}"
+    # "{{ hostvars[inventory_hostname]['groups']}}"
+  tags: [generate_sd_files]
+
+
+
+# - name: alert config file
+#   copy:
+#     src: "{{ role_path }}/files/alertrules.yml"
+#     dest: /etc/prometheus/alert.rules.yml
+
+- name: Copy systemd init file
+  template:
+    src: service.j2
+    dest: /etc/systemd/system/prometheus.service
+  notify: systemd_reload
+
+- name: Restart the Prometheus service
+  service:
+    name: prometheus
+    state: restarted
+    enabled: yes
+
+- name: Start prometheus service
+  service:
+    name: prometheus
+    state: started
+    enabled: yes
+
+- name: Check if prometheus is accessible
+  uri:
+    url: http://localhost:9090
+    method: GET
+    status_code: 200

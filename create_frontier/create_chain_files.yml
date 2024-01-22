@@ -1,0 +1,49 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    config: "{{ lookup('file', '../config/main.json') | from_json }}"
+    inventory_dir: "/home/gdz/Documents/Projects/airalab/ansible-robonomics-network/inventory/frontier"
+    DATA_PATH: "{{ inventory_dir }}/data"
+    prefixes:
+      grandpa: '6772616e'
+      babe: '62616265'
+      im_online: '696d6f6e'
+      para_validator: '70617261'
+      para_assignment: '6173676e'
+      authority_discovery: '61756469'
+      beefy: '62656566'
+
+  tasks:
+    - name: "Get sudo address"
+      shell: "{{ DATA_PATH }}/uploads/polkadot key inspect '{{ config.sudo_seed }}'"
+      register: sudo_account
+
+    - debug: msg={{sudo_account}}
+
+    - name: "Set sudo var"
+      set_fact:
+        sudo_address: "{{ sudo_account.stdout_lines[-1].split(' ')[-1] }}"
+
+    - name: "Build temporary polkadot spec"
+      shell: "{{ DATA_PATH }}/uploads/polkadot build-spec --chain rococo-local --disable-default-bootnode > {{ DATA_PATH }}/polkadot_tmp_spec.json"
+
+    - name: "Create var polkadot_tmp_spec"
+      include_vars:
+        file: "{{ DATA_PATH }}/polkadot_tmp_spec.json"
+        name: polkadot_tmp_spec
+
+    - debug:
+        msg: "{{ hostvars[inventory_hostname]['groups']['validators'] }}"
+
+    - name: Create keys and folders structure for validators
+      include_tasks: tasks/generate_keystores.yml
+      loop: 
+        "{{ hostvars[inventory_hostname]['groups']['validators'] }}"
+      loop_control:
+        loop_var: validator_ip
+    
+    - name: Generate SPEC file
+      include_tasks: tasks/generate_spec.yml

@@ -1,0 +1,43 @@
+[Unit]
+Description={{ SERVICE_NAME }}
+After=network.target
+
+[Service]
+User={{ SERVICE_NAME }}
+Group={{ SERVICE_NAME }}
+Type=simple
+WorkingDirectory={{ USER_PATH }}
+Restart=on-failure
+
+ExecStart=/usr/local/bin/{{ BINARY_NAME }} \
+{% if PARACHAIN_SPEC_PATH is defined %}--chain={{ PARACHAIN_SPEC_PATH }} \
+{% endif %}
+{% if SERVICE_CHAIN is defined %}--chain={{ SERVICE_CHAIN }} \
+{% endif %}
+{% if PARACHAIN_ID >= 2000 %}--parachain-id={{ PARACHAIN_ID }} \
+{% endif %}
+{% if PARACHAIN_PROMETHEUS_EXTERNAL == true %}--prometheus-external \
+{% endif %}
+{% if WS_MAX_CONNECTIONS is defined %}--ws-max-connections={{ WS_MAX_CONNECTIONS }} \
+{% endif %}
+--ws-external \
+--rpc-cors=all \
+--base-path={{ BASE_PATH }} \
+--telemetry-url="{{ TELEMETRY_URL }}" \
+--state-pruning=archive \
+--name={{ inventory_hostname }} \
+--execution=Wasm \
+--state-cache-size=0 \
+{% if ADDITIONAL_PARACHAIN_PARAMETERS is defined %}
+{% for parameter in ADDITIONAL_PARACHAIN_PARAMETERS %}{{parameter}} \
+{% endfor %}
+{% endif %}
+-- \
+{% if RELAYCHAIN_SPEC_PATH is defined %}--chain={{ RELAYCHAIN_SPEC_PATH }} \
+{% endif %}
+{% if RELAYCHAIN_PROMETHEUS_EXTERNAL == true %}--prometheus-external \
+{% endif %}
+--execution=Wasm
+
+[Install]
+WantedBy=multi-user.target

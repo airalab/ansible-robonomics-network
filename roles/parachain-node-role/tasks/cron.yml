@@ -1,0 +1,42 @@
+---
+- name: UPLOAD RESTART SCRIPT
+  block:
+    - name: "Create directory for cron scripts"
+      file:
+        path: '{{ USER_PATH }}/cron'
+        state: directory
+        mode: 0755
+        owner: '{{ SERVICE_NAME }}'
+        group: '{{ SERVICE_NAME }}'
+
+    - name: "Template robonomics-restart.sh to user cron"
+      template:
+        src: robonomics-restart.sh.j2
+        dest: '{{ USER_PATH }}/cron/robonomics-restart.sh'
+        mode: 0755
+        owner: '{{ SERVICE_NAME }}'
+        group: '{{ SERVICE_NAME }}'
+  tags: [ never, upload_restart_script ]
+
+- name: "Add robonomics-restart.sh to crontab"
+  cron:
+    name: "robonomics-restart"
+    minute: "*/5"
+    job: "{{ USER_PATH }}/cron/robonomics-restart.sh > /dev/null 2>&1"
+  notify: crond-restart
+  tags: [ never, set_cron_rules ]
+
+
+- name: REMOVE CRON RULES
+  block:
+    - name: "Remove robonomics-restart cron rule"
+      cron:
+        name: "robonomics-restart"
+        # env: yes
+        state: absent
+    # - shell: crontab -r
+    #   notify: crond-restart
+  rescue:
+    - name: "There's no crontab for root"
+      debug: msg="It's ok, go ahead"
+  tags: [ never, remove , remove_cron_rules ]

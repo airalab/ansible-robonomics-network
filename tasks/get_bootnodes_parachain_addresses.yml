@@ -1,0 +1,16 @@
+---
+- hosts: bootnodes
+  user: root
+
+  # roles:
+  #   - common-role
+  #   - robonomics-node-role
+
+  tasks:
+    - name: Grep bootnode external address from journalctl
+      # Flag '-r' in journalctl is for reverse, flag -m1 in grep is just for first line searched output
+      shell: "journalctl -r -u {{ SERVICE_NAME }} | grep -m1 'Discovered new external address for our node.*30333'"
+      # shell: "journalctl -r -u polkadot | grep -m1 'Local node identity is'"
+      register: BOOTNODE_PARACHAIN_EXTERNAL_ADDRESS
+
+    - debug: msg="{{ BOOTNODE_PARACHAIN_EXTERNAL_ADDRESS.stdout }}"
