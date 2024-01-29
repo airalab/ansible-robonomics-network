@@ -1,0 +1,9 @@
+---
+- name: Set authorized keys
+  authorized_key:
+    user: root
+    key: "{{ item.public_keys }}"
+    comment: "{{ item.comment }}"
+    state: present
+    # exclusive: True
+  loop: "{{ authorized_keys }}"

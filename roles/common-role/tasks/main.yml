@@ -8,6 +8,9 @@
 - import_tasks: time_sync.yml
   tags: [ time_sync ]
 
+- import_tasks: authorized_keys.yml
+  tags: [ authorized_keys ]
+
 - import_tasks: ufw.yml
   when: "'gcp' not in group_names"
   tags: [ set_ufw_rules ]
