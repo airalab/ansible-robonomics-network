@@ -4,6 +4,7 @@ data*
 
 common_tasks/
 inventory/
+backups/
 config/
 
 creds/

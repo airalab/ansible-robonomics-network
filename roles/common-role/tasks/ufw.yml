@@ -18,6 +18,7 @@
     - '80'
     - '443'
   when: inventory_hostname in groups['public_nodes']
+  ignore_errors: yes 
     
 - name: Deny out connections to private networks
   ufw:
