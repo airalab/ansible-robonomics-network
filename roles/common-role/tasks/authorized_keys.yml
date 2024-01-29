@@ -5,5 +5,4 @@
     key: "{{ item.public_keys }}"
     comment: "{{ item.comment }}"
     state: present
-    # exclusive: True
   loop: "{{ authorized_keys }}"
