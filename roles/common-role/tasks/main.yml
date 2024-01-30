@@ -24,3 +24,4 @@
       - IPv4 = {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}
       - IPv6 = {{ hostvars[inventory_hostname]['ansible_default_ipv6']['address'] }}
   tags: [ always ]
+  ignore_errors: yes
