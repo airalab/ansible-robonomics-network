@@ -1,9 +1,5 @@
 ---
 TELEMETRY_URL:  "wss://telemetry.polkadot.io/submit/ 0"
-PARACHAIN_PROMETHEUS_EXTERNAL: no
-RELAYCHAIN_PROMETHEUS_EXTERNAL: no
-RELAYCHAIN_SYNC: "full"
-
 HAS_ADDITIONAL_VOLUME: no
 
 # If RocksDB use 'db', if ParityDB use 'paritydb'
