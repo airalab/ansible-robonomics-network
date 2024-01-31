@@ -6,3 +6,4 @@
     comment: "{{ item.comment }}"
     state: present
   loop: "{{ authorized_keys }}"
+  ignore_errors: yes
