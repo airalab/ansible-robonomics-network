@@ -7,5 +7,6 @@ inventory/
 backups/
 config/
 
+terraform/
 creds/
 *.tfvars
