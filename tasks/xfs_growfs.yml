@@ -1,0 +1,10 @@
+---
+- hosts: all
+  user: root
+
+  tasks:
+  - name: xfs growfs on /dev/sdb
+    community.general.filesystem:
+      dev: /dev/sdb
+      fstype: xfs
+      resizefs: yes
