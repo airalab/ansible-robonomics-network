@@ -3,8 +3,9 @@
   user: root
 
   tasks:
-  - name: xfs growfs on /dev/sdb
+  - name: xfs growfs on {{ growfs_dev }}
     community.general.filesystem:
-      dev: /dev/sdb
-      fstype: xfs
+      dev: "{{ growfs_dev }}"
+      fstype: "{{ growfs_fstype }}"
       resizefs: yes
+      
